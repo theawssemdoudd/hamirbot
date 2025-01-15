@@ -18,21 +18,21 @@ export default function TasksPage() {
     fetch('/api/tasks')
       .then((response) => {
         if (!response.ok) {
-          throw new Error('Failed to fetch tasks');
+          throw new Error('Failed to fetch tasks'); // إذا لم تكن الاستجابة ناجحة، ارمي خطأ
         }
         return response.json();
       })
       .then((data) => {
-        setTasks(data);
-        setIsLoading(false);
+        setTasks(data); // تحديث حالة المهام بالبيانات المستلمة
+        setIsLoading(false); // تعيين حالة التحميل إلى false
       })
       .catch((err) => {
         if (err instanceof Error) {
-          setError(err.message);
+          setError(err.message); // إذا كان الخطأ من نوع Error، قم بتحديث حالة الخطأ برسالة الخطأ
         } else {
-          setError('An unknown error occurred');
+          setError('An unknown error occurred'); // في حالة حدوث خطأ غير معروف
         }
-        setIsLoading(false);
+        setIsLoading(false); // تعيين حالة التحميل إلى false
       });
   }, []);
 
@@ -45,7 +45,7 @@ export default function TasksPage() {
       });
 
       if (!res.ok) {
-        throw new Error('Failed to update task');
+        throw new Error('Failed to update task'); // إذا لم تكن الاستجابة ناجحة، ارمي خطأ
       }
 
       const updatedTask = await res.json();
@@ -57,19 +57,19 @@ export default function TasksPage() {
       );
     } catch (err) {
       if (err instanceof Error) {
-        setError(err.message);
+        setError(err.message); // إذا كان الخطأ من نوع Error، قم بتحديث حالة الخطأ برسالة الخطأ
       } else {
-        setError('An unknown error occurred');
+        setError('An unknown error occurred'); // في حالة حدوث خطأ غير معروف
       }
     }
   };
 
   if (isLoading) {
-    return <div>Loading tasks...</div>;
+    return <div>Loading tasks...</div>; // عرض رسالة التحميل أثناء جلب البيانات
   }
 
   if (error) {
-    return <div className="text-red-500">{error}</div>;
+    return <div className="text-red-500">{error}</div>; // عرض رسالة الخطأ إذا حدث خطأ
   }
 
   return (
