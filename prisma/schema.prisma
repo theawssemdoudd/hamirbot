@@ -1,0 +1,28 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  telegramId Int      @unique
+  username   String?
+  firstName  String?
+  lastName   String?
+  points     Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Task {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  url       String
+  status    String   @default("pending") // يمكن أن تكون "pending" أو "completed"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
