@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "seed": "ts-node scripts/seed.ts"و
+    "seed": "ts-node scripts/seed.ts",
     "dev": "next dev",
     "build": "prisma generate && next build",
     "start": "next start",
