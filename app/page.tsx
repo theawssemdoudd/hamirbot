@@ -56,8 +56,8 @@ export default function Home() {
     const newPoints = points + 1;
     setPoints(newPoints);
 
-    // إرسال النقاط و telegramId إلى الخادم
-    fetch('/api/points', {
+    // إرسال النقاط و telegramId إلى المسار الصحيح
+    fetch('/api/increase-points', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -97,7 +97,7 @@ export default function Home() {
       {/* صورة قابلة للنقر */}
       <div className="my-4 text-center">
         <img
-          src="../images/background.png"
+          src="..//images/background.png"
           alt="Click me"
           className="cursor-pointer mx-auto w-32 h-32"
           onClick={handleImageClick}
@@ -105,7 +105,7 @@ export default function Home() {
       </div>
 
       {/* خط سفلي */}
-      <hr className="border-t-4 border-blue-300 mt-4" />
+      <hr className="border-t-4 border-gray-300 mt-4" />
 
       {/* إضافة الشريط السفلي */}
       <BottomNavigation />
