@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
+    // Handle GET request to fetch all tasks
     try {
       const tasks = await prisma.task.findMany();
       res.status(200).json(tasks);
@@ -11,6 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.status(500).json({ error: 'Internal server error' });
     }
   } else if (req.method === 'PATCH') {
+    // Handle PATCH request to update a task's status
     const { id, status } = req.body;
 
     if (!id || !status) {
@@ -29,7 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.status(500).json({ error: 'Internal server error' });
     }
   } else {
+    // Handle unsupported methods
     res.status(405).json({ error: 'Method not allowed' });
   }
 }
-
