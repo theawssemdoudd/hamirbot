@@ -19,7 +19,8 @@ model User {
 
   // علاقات العلاقات
   wallets    Wallet[]
-  referrals  Referral[]
+  referrals  Referral[] @relation("UserReferrals")
+  referredBy Referral[] @relation("ReferredUser")
 }
 
 model Task {
@@ -49,6 +50,6 @@ model Referral {
   createdAt    DateTime @default(now())
 
   // علاقات العلاقات
-  user         User     @relation(fields: [userId], references: [id])
-  referredUser User     @relation(fields: [referredUserId], references: [id])
+  user         User     @relation("UserReferrals", fields: [userId], references: [id])
+  referredUser User     @relation("ReferredUser", fields: [referredUserId], references: [id])
 }
