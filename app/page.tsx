@@ -56,15 +56,28 @@ export default function Home() {
     const newPoints = points + 1;
     setPoints(newPoints);
 
+    // إرسال النقاط و telegramId إلى الخادم
     fetch('/api/points', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ points: newPoints }),
-    }).catch((err) => {
-      console.error('Error updating points:', err);
-    });
+      body: JSON.stringify({
+        telegramId: user.telegramId, // إرسال معرّف المستخدم
+        points: newPoints,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) {
+          console.error('Error updating points:', data.error);
+        } else {
+          console.log('Points updated successfully');
+        }
+      })
+      .catch((err) => {
+        console.error('Error updating points:', err);
+      });
   };
 
   if (error) {
@@ -92,7 +105,7 @@ export default function Home() {
       </div>
 
       {/* خط سفلي */}
-      <hr className="border-t-4 border-gray-300 mt-4" />
+      <hr className="border-t-4 border-blue-300 mt-4" />
 
       {/* إضافة الشريط السفلي */}
       <BottomNavigation />
