@@ -16,6 +16,10 @@ model User {
   points     Int      @default(0)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  // علاقات العلاقات
+  wallets    Wallet[]
+  referrals  Referral[]
 }
 
 model Task {
@@ -25,4 +29,26 @@ model Task {
   status    String   @default("pending") // يمكن أن تكون "pending" أو "completed"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Wallet {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  balance   Float    @default(0.0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // علاقات العلاقات
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Referral {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String   @db.ObjectId
+  referredUserId String @db.ObjectId
+  createdAt    DateTime @default(now())
+
+  // علاقات العلاقات
+  user         User     @relation(fields: [userId], references: [id])
+  referredUser User     @relation(fields: [referredUserId], references: [id])
 }
