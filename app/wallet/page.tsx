@@ -1,4 +1,5 @@
-"use client"; // هذا يجعل المكون مكون عميل
+"use client"; 
+
 import { useState, useEffect } from "react";
 import { useTonConnectUI } from "@tonconnect/ui-react";
 import { Address } from "@ton/core";
