@@ -15,7 +15,8 @@ const App: React.FC = () => {
 
     // Subscribe to connection events
     tonConnectInstance.onStatusChange((status) => {
-      if (status.connected) {
+      if (status && status.connected) {
+        // Ensure status is not null and connected is true
         setWalletAddress(status.account.address); // Set wallet address if connected
         console.log('Wallet connected:', status.account.address);
       } else {
@@ -60,9 +61,11 @@ const App: React.FC = () => {
       ) : (
         <button onClick={connectWallet}>Connect Wallet</button>
       )}
-      <BottomNavigation/>
+    <BottomNavigation/>
     </div>
   );
 };
 
 export default App;
+
+      
