@@ -9,13 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'UserId and address are required' });
     }
 
-    try {
-      const wallet = await prisma.wallet.create({
-        data: {
-          userId,
-          address,
-          balance: 0.0, // يمكنك ضبط الرصيد بناءً على البيانات الفعلية
-        },
+ 
       });
 
       res.status(200).json(wallet);
