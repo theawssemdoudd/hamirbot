@@ -1,3 +1,4 @@
+import BottomNavigation from '@/components/BottomNavigation';  // استيراد المكون
 export default function Tasks() {
   return (
     <div className="container mx-auto p-4">
