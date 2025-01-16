@@ -13,22 +13,23 @@ const App: React.FC = () => {
     const tonConnectInstance = new TonConnect({ manifestUrl: '/tonconnect-manifest.json' });
     setTonConnect(tonConnectInstance);
 
-    // Subscribe to connection events
-    tonConnectInstance.onStatusChange((wallet: Wallet | null) => {
+    // Define the event handler
+    const handleStatusChange = (wallet: Wallet | null) => {
       if (wallet && wallet.account) {
-        // If wallet is connected, set the wallet address
         setWalletAddress(wallet.account.address);
         console.log('Wallet connected:', wallet.account.address);
       } else {
-        // If wallet is disconnected, clear the address
         setWalletAddress(null);
         console.log('Wallet disconnected');
       }
-    });
+    };
+
+    // Subscribe to connection events
+    tonConnectInstance.onStatusChange(handleStatusChange);
 
     return () => {
-      // Cleanup: Unsubscribe from events
-      tonConnectInstance.offStatusChange();
+      // Cleanup: Unsubscribe from events by removing the listener manually
+      tonConnectInstance.onStatusChange(null);
     };
   }, []);
 
