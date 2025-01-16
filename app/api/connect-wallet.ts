@@ -1,29 +1,60 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { prisma } from '@/lib/prisma';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'POST') {
-    const { userId, address } = req.body;
+'use client';
 
-    if (!userId || !address) {
-      return res.status(400).json({ error: 'UserId and address are required' });
-    }
+import { useState } from 'react';
 
+export default function ConnectWalletPage() {
+  const [userId, setUserId] = useState('');
+  const [address, setAddress] = useState('');
+  const [message, setMessage] = useState('');
+
+  const handleConnectWallet = async () => {
     try {
-      const wallet = await prisma.wallet.create({
-        data: {
-          userId,
-          address,
-          balance: 0.0, // يمكنك ضبط الرصيد بناءً على البيانات الفعلية
-        },
+      const response = await fetch('/api/connect-wallet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, address }),
       });
 
-      res.status(200).json(wallet);
+      if (!response.ok) {
+        throw new Error('Failed to connect wallet');
+      }
+
+      const data = await response.json();
+      setMessage(`Wallet connected successfully with ID: ${data.id}`);
     } catch (error) {
-      console.error('Error connecting wallet:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      setMessage(error.message);
     }
-  } else {
-    res.status(405).json({ error: 'Method not allowed' });
-  }
+  };
+
+  return (
+    <div>
+      <h1 className="text-2xl font-bold mb-4">Connect Your TON Wallet</h1>
+      <div>
+        <label className="block mb-2">User ID:</label>
+        <input
+          type="text"
+          value={userId}
+          onChange={(e) => setUserId(e.target.value)}
+          className="border p-2 mb-4 w-full"
+        />
+      </div>
+      <div>
+        <label className="block mb-2">Wallet Address:</label>
+        <input
+          type="text"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          className="border p-2 mb-4 w-full"
+        />
+      </div>
+      <button
+        className="bg-blue-500 text-white px-4 py-2 rounded"
+        onClick={handleConnectWallet}
+      >
+        Connect Wallet
+      </button>
+      {message && <p className="mt-4">{message}</p>}
+    </div>
+  );
 }
