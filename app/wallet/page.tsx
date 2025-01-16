@@ -1,26 +1,40 @@
 'use client';
 
 import BottomNavigation from '@/components/BottomNavigation'; // استيراد الشريط السفلي
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TonConnect } from '@tonconnect/sdk';
 
 const App: React.FC = () => {
   const [tonConnect, setTonConnect] = useState<TonConnect | null>(null);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
+  useEffect(() => {
+    // Initialize TonConnect instance on component mount
+    const tonConnectInstance = new TonConnect({ manifestUrl: '/tonconnect-manifest.json' });
+    setTonConnect(tonConnectInstance);
+
+    // Subscribe to connection events
+    tonConnectInstance.onStatusChange((status) => {
+      if (status.connected) {
+        setWalletAddress(status.account.address); // Set wallet address if connected
+        console.log('Wallet connected:', status.account.address);
+      } else {
+        setWalletAddress(null); // Clear address if disconnected
+        console.log('Wallet disconnected');
+      }
+    });
+
+    return () => {
+      // Cleanup: Unsubscribe from events
+      tonConnectInstance.offStatusChange();
+    };
+  }, []);
+
   const connectWallet = async () => {
     try {
-      // Initialize TonConnect
-      const tonConnectInstance = new TonConnect({ manifestUrl: '/tonconnect-manifest.json' });
-      setTonConnect(tonConnectInstance);
-
-      // Request wallet connection
-      const result = await tonConnectInstance.connect({ jsBridgeKey: 'tonkeeper' }); // تعديل هنا
-      if (result) {
-        setWalletAddress(result.account.address);
-        console.log('Connected to wallet:', result);
-      } else {
-        console.log('Connection cancelled');
+      if (tonConnect) {
+        await tonConnect.connectWallet({ jsBridgeKey: 'tonkeeper' }); // Specify wallet type
+        console.log('Connection initiated');
       }
     } catch (error) {
       console.error('Error connecting wallet:', error);
