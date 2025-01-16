@@ -19,16 +19,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* ضمان أن العنوان نص فقط */}
-        <title>{metadata.title || "Default Title"}</title>
+        {/* تحويل العنوان إلى نص صريح */}
+        <title>{typeof metadata.title === "string" ? metadata.title : "Default Title"}</title>
       </head>
       <body className={inter.className}>
-        {/* إضافة مكتبة Telegram */}
+        {/* تضمين مكتبة Telegram */}
         <Script
           src="https://telegram.org/js/telegram-web-app.js"
           strategy="beforeInteractive"
         />
-        {/* TonConnectUIProvider لتوفير الاتصال بـ TON Wallet */}
+        {/* تضمين TonConnect */}
         <TonConnectUIProvider manifestUrl="https://violet-traditional-rabbit-103.mypinata.cloud/ipfs/QmQJJAdZ2qSwdepvb5evJq7soEBueFenHLX3PoM6tiBffm">
           {children}
         </TonConnectUIProvider>
