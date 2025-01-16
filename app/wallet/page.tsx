@@ -1,3 +1,6 @@
+'use client';
+
+import BottomNavigation from '@/components/BottomNavigation'; // استيراد الشريط السفلي
 import React, { useState } from 'react';
 import { TonConnect } from '@tonconnect/sdk';
 
@@ -43,6 +46,7 @@ const App: React.FC = () => {
       ) : (
         <button onClick={connectWallet}>Connect Wallet</button>
       )}
+      <BottomNavigation/>
     </div>
   );
 };
