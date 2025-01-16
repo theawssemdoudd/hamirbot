@@ -1,5 +1,3 @@
-"use client"
-
 import React, { useState } from 'react';
 import { TonConnect } from '@tonconnect/sdk';
 
@@ -14,7 +12,7 @@ const App: React.FC = () => {
       setTonConnect(tonConnectInstance);
 
       // Request wallet connection
-      const result = await tonConnectInstance.connect();
+      const result = await tonConnectInstance.connect({ jsBridgeKey: 'tonkeeper' }); // تعديل هنا
       if (result) {
         setWalletAddress(result.account.address);
         console.log('Connected to wallet:', result);
