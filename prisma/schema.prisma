@@ -7,19 +7,50 @@ generator client {
   provider = "prisma-client-js"
 }
 
-enum TaskStatus {
-  PENDING
-  COMPLETED
-}
-
 model User {
-  id         String    @id @default(auto()) @map("_id") @db.ObjectId
-  telegramId Int       @unique
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  telegramId Int      @unique
   username   String?
   firstName  String?
   lastName   String?
-  points     Int       @default(0)
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  points     Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // علاقات العلاقات
+  wallets    Wallet[]
+  referrals  Referral[] @relation("UserReferrals")
+  referredBy Referral[] @relation("ReferredUser")
+}
+
+model Task {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  url       String
+  status    String   @default("pending") // يمكن أن تكون "pending" أو "completed"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Wallet {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  balance   Float    @default(0.0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // علاقات العلاقات
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Referral {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String   @db.ObjectId
+  referredUserId String @db.ObjectId
+  createdAt    DateTime @default(now())
+
+  // علاقات العلاقات
+  user         User     @relation("UserReferrals", fields: [userId], references: [id])
+  referredUser User     @relation("ReferredUser", fields: [referredUserId], references: [id])
 }
 
