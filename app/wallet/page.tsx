@@ -44,6 +44,7 @@ export default function WalletPage() {
           Connect Wallet
         </button>
       )}
+      <BottomNavigation />
     </main>
   );
 }
