@@ -58,11 +58,38 @@ const App: React.FC = () => {
       {walletAddress ? (
         <div>
           <p>Connected Wallet Address: {walletAddress}</p>
-          <button onClick={disconnectWallet}>Disconnect Wallet</button>
+          <button
+            onClick={disconnectWallet}
+            style={{
+              padding: '10px 20px',
+              fontSize: '16px',
+              backgroundColor: '#ff4d4f',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer',
+            }}
+          >
+            Disconnect Wallet
+          </button>
         </div>
       ) : (
-        <button onClick={connectWallet}>Connect Wallet</button>
+        <button
+          onClick={connectWallet}
+          style={{
+            padding: '10px 20px',
+            fontSize: '16px',
+            backgroundColor: '#1890ff',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+          }}
+        >
+          Connect Wallet
+        </button>
       )}
+
     <BottomNavigation/>
     </div>
   );
