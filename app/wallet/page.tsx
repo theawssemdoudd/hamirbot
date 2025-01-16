@@ -2,7 +2,7 @@
 
 import BottomNavigation from '@/components/BottomNavigation'; // استيراد الشريط السفلي
 import React, { useEffect, useState } from 'react';
-import { TonConnect } from '@tonconnect/sdk';
+import { TonConnect, Wallet } from '@tonconnect/sdk';
 
 const App: React.FC = () => {
   const [tonConnect, setTonConnect] = useState<TonConnect | null>(null);
@@ -14,13 +14,14 @@ const App: React.FC = () => {
     setTonConnect(tonConnectInstance);
 
     // Subscribe to connection events
-    tonConnectInstance.onStatusChange((status) => {
-      if (status && status.connected) {
-        // Ensure status is not null and connected is true
-        setWalletAddress(status.account.address); // Set wallet address if connected
-        console.log('Wallet connected:', status.account.address);
+    tonConnectInstance.onStatusChange((wallet: Wallet | null) => {
+      if (wallet && wallet.account) {
+        // If wallet is connected, set the wallet address
+        setWalletAddress(wallet.account.address);
+        console.log('Wallet connected:', wallet.account.address);
       } else {
-        setWalletAddress(null); // Clear address if disconnected
+        // If wallet is disconnected, clear the address
+        setWalletAddress(null);
         console.log('Wallet disconnected');
       }
     });
@@ -61,6 +62,7 @@ const App: React.FC = () => {
       ) : (
         <button onClick={connectWallet}>Connect Wallet</button>
       )}
+
     <BottomNavigation/>
     </div>
   );
