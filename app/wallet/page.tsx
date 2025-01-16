@@ -9,26 +9,23 @@ const App: React.FC = () => {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
   useEffect(() => {
-    // Initialize TonConnect instance on component mount
     const tonConnectInstance = new TonConnect({ manifestUrl: '/tonconnect-manifest.json' });
     setTonConnect(tonConnectInstance);
 
-    // Define the event handler
     const handleStatusChange = (wallet: Wallet | null) => {
+      console.log('Status changed:', wallet);
       if (wallet && wallet.account) {
         setWalletAddress(wallet.account.address);
         console.log('Wallet connected:', wallet.account.address);
       } else {
         setWalletAddress(null);
-        console.log('Wallet disconnected');
+        console.log('Wallet disconnected or no wallet connected');
       }
     };
 
-    // Subscribe to connection events
     const unsubscribe = tonConnectInstance.onStatusChange(handleStatusChange);
 
     return () => {
-      // Cleanup: Call the unsubscribe function
       unsubscribe();
     };
   }, []);
@@ -36,9 +33,11 @@ const App: React.FC = () => {
   const connectWallet = async () => {
     try {
       if (tonConnect) {
-        // Use the connect method to initiate the connection
-        await tonConnect.connect({ jsBridgeKey: 'tonkeeper' }); // Specify wallet type
-        console.log('Connection initiated');
+        console.log('Attempting to connect to the wallet...');
+        await tonConnect.connect({ jsBridgeKey: 'tonkeeper' });
+        console.log('Connection initiated successfully');
+      } else {
+        console.error('TonConnect instance is not initialized');
       }
     } catch (error) {
       console.error('Error connecting wallet:', error);
@@ -64,7 +63,12 @@ const App: React.FC = () => {
       ) : (
         <button onClick={connectWallet}>Connect Wallet</button>
       )}
-      
+    </div>
+  );
+};
+
+export default App;
+
     <BottomNavigation/>
     </div>
   );
