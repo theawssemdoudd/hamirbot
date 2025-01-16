@@ -1,98 +1,95 @@
-'use client';
+import { useState, useEffect, useCallback } from 'react';
+import { useTonConnectUI } from '@tonconnect/ui-react';
+import { Address } from "@ton/core";
 
-import { useEffect, useState } from 'react';
-
-interface Task {
-  id: string;
-  title: string;
-  url: string;
-  status: string;
-}
-
-export default function TasksPage() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [error, setError] = useState<string | null>(null);
+export default function Home() {
+  const [tonConnectUI] = useTonConnectUI();
+  const [tonWalletAddress, setTonWalletAddress] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    fetch('/api/tasks')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Failed to fetch tasks'); // إذا لم تكن الاستجابة ناجحة، ارمي خطأ
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setTasks(data); // تحديث حالة المهام بالبيانات المستلمة
-        setIsLoading(false); // تعيين حالة التحميل إلى false
-      })
-      .catch((err) => {
-        if (err instanceof Error) {
-          setError(err.message); // إذا كان الخطأ من نوع Error، قم بتحديث حالة الخطأ برسالة الخطأ
-        } else {
-          setError('An unknown error occurred'); // في حالة حدوث خطأ غير معروف
-        }
-        setIsLoading(false); // تعيين حالة التحميل إلى false
-      });
+  const handleWalletConnection = useCallback((address: string) => {
+    setTonWalletAddress(address);
+    setIsLoading(false);
   }, []);
 
-  const handleCompleteTask = async (taskId: string) => {
-    try {
-      const res = await fetch('/api/tasks', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: taskId, status: 'completed' }),
-      });
+  const handleWalletDisconnection = useCallback(() => {
+    setTonWalletAddress(null);
+    setIsLoading(false);
+  }, []);
 
-      if (!res.ok) {
-        throw new Error('Failed to update task'); // إذا لم تكن الاستجابة ناجحة، ارمي خطأ
-      }
-
-      const updatedTask = await res.json();
-
-      setTasks((prevTasks) =>
-        prevTasks.map((task) =>
-          task.id === taskId ? { ...task, status: 'completed' } : task
-        )
-      );
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message); // إذا كان الخطأ من نوع Error، قم بتحديث حالة الخطأ برسالة الخطأ
+  useEffect(() => {
+    const checkWalletConnection = async () => {
+      if (tonConnectUI.account?.address) {
+        handleWalletConnection(tonConnectUI.account?.address);
       } else {
-        setError('An unknown error occurred'); // في حالة حدوث خطأ غير معروف
+        handleWalletDisconnection();
       }
+    };
+
+    checkWalletConnection();
+
+    const unsubscribe = tonConnectUI.onStatusChange((wallet) => {
+      if (wallet) {
+        handleWalletConnection(wallet.account.address);
+      } else {
+        handleWalletDisconnection();
+      }
+    });
+
+    return () => unsubscribe();
+  }, [tonConnectUI, handleWalletConnection, handleWalletDisconnection]);
+
+  const handleWalletAction = async () => {
+    try {
+      setIsLoading(true);
+      if (tonConnectUI.connected) {
+        await tonConnectUI.disconnect();
+      } else {
+        await tonConnectUI.openModal();
+      }
+    } catch (error) {
+      console.error("Wallet action failed:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  if (isLoading) {
-    return <div>Loading tasks...</div>; // عرض رسالة التحميل أثناء جلب البيانات
-  }
+  const formatAddress = (address: string) => {
+    const tempAddress = Address.parse(address).toString();
+    return `${tempAddress.slice(0, 4)}...${tempAddress.slice(-4)}`;
+  };
 
-  if (error) {
-    return <div className="text-red-500">{error}</div>; // عرض رسالة الخطأ إذا حدث خطأ
+  if (isLoading) {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center">
+        <div className="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded">
+          Loading...
+        </div>
+      </main>
+    );
   }
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">Tasks</h1>
-      <ul>
-        {tasks.map((task) => (
-          <li key={task.id} className="mb-4">
-            <div>
-              <h2 className="text-xl">{task.title}</h2>
-              <p>Status: {task.status}</p>
-              {task.status === 'pending' && (
-                <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
-                  onClick={() => handleCompleteTask(task.id)}
-                >
-                  Complete Task
-                </button>
-              )}
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <main className="flex min-h-screen flex-col items-center justify-center">
+      <h1 className="text-4xl font-bold mb-8">TON Connect Demo</h1>
+      {tonWalletAddress ? (
+        <div className="flex flex-col items-center">
+          <p className="mb-4">Connected: {formatAddress(tonWalletAddress)}</p>
+          <button
+            onClick={handleWalletAction}
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Disconnect Wallet
+          </button>
+        </div>
+      ) : (
+        <button
+          onClick={handleWalletAction}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Connect TON Wallet
+        </button>
+      )}
+    </main>
   );
 }
