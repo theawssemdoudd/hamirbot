@@ -25,11 +25,11 @@ const App: React.FC = () => {
     };
 
     // Subscribe to connection events
-    tonConnectInstance.onStatusChange(handleStatusChange);
+    const unsubscribe = tonConnectInstance.onStatusChange(handleStatusChange);
 
     return () => {
-      // Cleanup: Unsubscribe from events by removing the listener manually
-      tonConnectInstance.onStatusChange(null);
+      // Cleanup: Call the unsubscribe function
+      unsubscribe();
     };
   }, []);
 
@@ -63,7 +63,6 @@ const App: React.FC = () => {
       ) : (
         <button onClick={connectWallet}>Connect Wallet</button>
       )}
-
     <BottomNavigation/>
     </div>
   );
