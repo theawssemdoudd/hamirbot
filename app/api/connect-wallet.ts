@@ -5,19 +5,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === 'POST') {
     const { userId, address } = req.body;
 
-    // تحقق من أن البيانات المطلوبة موجودة
     if (!userId || !address) {
       return res.status(400).json({ error: 'UserId and address are required' });
     }
 
     try {
-      // البحث عن المستخدم أو تحديث بيانات المحفظة
       let wallet = await prisma.wallet.findUnique({
-        where: { userId: userId },
+        where: { userId: userId }, // استخدام userId كحقل فريد
       });
 
       if (!wallet) {
-        // إذا لم يتم العثور على المحفظة، قم بإنشائها
         wallet = await prisma.wallet.create({
           data: {
             userId: userId,
@@ -25,14 +22,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           },
         });
       } else {
-        // إذا كانت المحفظة موجودة، قم بتحديث العنوان
         wallet = await prisma.wallet.update({
           where: { userId: userId },
           data: { address: address },
         });
       }
 
-      // إعادة المحفظة كاستجابة
       res.status(200).json(wallet);
     } catch (error) {
       console.error('Error connecting wallet:', error);
