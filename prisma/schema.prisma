@@ -23,7 +23,7 @@ model User {
   updatedAt  DateTime  @updatedAt
 
   // Relations
-  wallets    Wallet[]
+  wallets    Wallet[]  @relation("UserWallets")
   tasks      Task[]
   referrals  Referral[] @relation("UserReferrals")
   referredBy Referral[] @relation("ReferredUser")
@@ -35,7 +35,7 @@ model Wallet {
   address String
 
   // Relations
-  user    User    @relation(fields: [userId], references: [id])
+  user    User    @relation("UserWallets", fields: [userId], references: [id])
 }
 
 model Task {
