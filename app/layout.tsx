@@ -19,7 +19,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <title>{metadata.title}</title>
+        {/* ضمان أن العنوان نص فقط */}
+        <title>{metadata.title || "Default Title"}</title>
       </head>
       <body className={inter.className}>
         {/* إضافة مكتبة Telegram */}
