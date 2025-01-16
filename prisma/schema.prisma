@@ -21,43 +21,5 @@ model User {
   points     Int       @default(0)
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
-
-  // Relations
-  wallets    Wallet[]  @relation("UserWallets")
-  tasks      Task[]
-  referrals  Referral[] @relation("UserReferrals")
-  referredBy Referral[] @relation("ReferredUser")
 }
 
-model Wallet {
-  id      String  @id @default(auto()) @map("_id") @db.ObjectId
-  userId  String  @db.ObjectId
-  address String
-
-  // Relations
-  user    User    @relation("UserWallets", fields: [userId], references: [id])
-}
-
-model Task {
-  id        String     @id @default(auto()) @map("_id") @db.ObjectId
-  title     String
-  url       String
-  status    TaskStatus @default(PENDING)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-
-  // Relations
-  userId    String     @db.ObjectId
-  user      User       @relation(fields: [userId], references: [id])
-}
-
-model Referral {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId       String   @db.ObjectId
-  referredUserId String @db.ObjectId
-  createdAt    DateTime @default(now())
-
-  // Relations
-  user         User     @relation("UserReferrals", fields: [userId], references: [id])
-  referredUser User     @relation("ReferredUser", fields: [referredUserId], references: [id])
-}
