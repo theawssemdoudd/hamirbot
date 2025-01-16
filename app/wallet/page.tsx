@@ -36,8 +36,11 @@ const App: React.FC = () => {
   const connectWallet = async () => {
     try {
       if (tonConnect) {
-        await tonConnect.connectWallet({ jsBridgeKey: 'tonkeeper' }); // Specify wallet type
-        console.log('Connection initiated');
+        // Use the correct method to connect
+        const result = await tonConnect.connect({ jsBridgeKey: 'tonkeeper' }); // Specify wallet type
+        if (result) {
+          console.log('Connection successful:', result.account.address);
+        }
       }
     } catch (error) {
       console.error('Error connecting wallet:', error);
