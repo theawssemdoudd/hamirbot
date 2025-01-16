@@ -63,12 +63,6 @@ const App: React.FC = () => {
       ) : (
         <button onClick={connectWallet}>Connect Wallet</button>
       )}
-    </div>
-  );
-};
-
-export default App;
-
     <BottomNavigation/>
     </div>
   );
