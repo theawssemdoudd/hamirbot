@@ -1,26 +1,37 @@
-import type { Metadata } from "next"
-import './globals.css'
-import { Inter } from 'next/font/google'
-import Script from 'next/script'
+import type { Metadata } from "next";
+import "./globals.css";
+import { Inter } from "next/font/google";
+import Script from "next/script";
+import { TonConnectUIProvider } from "@tonconnect/ui-react";
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Telegram Mini App',
-  description: 'A simple Telegram mini app using Next.js and Prisma',
-}
+  title: "Telegram Mini App",
+  description: "A simple Telegram mini app using Next.js and Prisma",
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
+      <head>
+        <title>{metadata.title}</title>
+      </head>
       <body className={inter.className}>
-        <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
-        {children}
+        {/* إضافة مكتبة Telegram */}
+        <Script
+          src="https://telegram.org/js/telegram-web-app.js"
+          strategy="beforeInteractive"
+        />
+        {/* TonConnectUIProvider لتوفير الاتصال بـ TON Wallet */}
+        <TonConnectUIProvider manifestUrl="https://violet-traditional-rabbit-103.mypinata.cloud/ipfs/QmQJJAdZ2qSwdepvb5evJq7soEBueFenHLX3PoM6tiBffm">
+          {children}
+        </TonConnectUIProvider>
       </body>
     </html>
-  )
+  );
 }
