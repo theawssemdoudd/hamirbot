@@ -1,88 +1,12 @@
 'use client'
 
-import { useState } from 'react';
+import TasksPage from '../../components/TasksPage';
 
-interface Task {
-  id: number;
-  title: string;
-  url: string;
-  completed: boolean;
-}
-
-const TasksPage = ({ tasks, telegramId }: { tasks: Task[], telegramId: string }) => {
-  const [taskList, setTaskList] = useState<Task[]>(tasks);
-
-  const handleTaskClick = async (taskId: number) => {
-    try {
-      // افتح الرابط في نافذة جديدة
-      const task = taskList.find(t => t.id === taskId);
-      if (task) {
-        window.open(task.url, '_blank');
-      }
-
-      // قم بتحديث حالة المهمة إلى "بدأت"
-      setTaskList(prevTasks =>
-        prevTasks.map(t =>
-          t.id === taskId ? { ...t, completed: true } : t
-        )
-      );
-    } catch (error) {
-      console.error('Error opening task:', error);
-    }
-  };
-
-  const handleCheckClick = async (taskId: number) => {
-    try {
-      // قم بإرسال طلب POST لتحديث النقاط
-      const response = await fetch('/api/update-points', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ telegramId }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update points');
-      }
 const tasks = [
   { id: 1, title: 'Task 1', url: 'https://example.com/task1', completed: false },
   { id: 2, title: 'Task 2', url: 'https://example.com/task2', completed: false },
 ];
-      // قم بإخفاء المهمة بعد الضغط على "Check"
-      setTaskList(prevTasks => prevTasks.filter(t => t.id !== taskId));
-    } catch (error) {
-      console.error('Error updating points:', error);
-    }
-  };
 
-  return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-      <h1 style={{ fontSize: '2rem', marginBottom: '20px' }}>Tasks</h1>
-      {taskList.map(task => (
-        <div key={task.id} style={{ marginBottom: '15px', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span>{task.title}</span>
-            {!task.completed ? (
-              <button
-                onClick={() => handleTaskClick(task.id)}
-                style={{ padding: '5px 10px', backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '3px' }}
-              >
-                Start
-              </button>
-            ) : (
-              <button
-                onClick={() => handleCheckClick(task.id)}
-                style={{ padding: '5px 10px', backgroundColor: '#28A745', color: 'white', border: 'none', borderRadius: '3px' }}
-              >
-                Check
-              </button>
-            )}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-};
-
-export default TasksPage;
+export default function Tasks() {
+  return <TasksPage tasks={tasks} telegramId="12345" />;
+}
