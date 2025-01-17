@@ -1,23 +1,31 @@
 'use client'
-
-import "./globals.css";
 import { TonConnectUIProvider } from "@tonconnect/ui-react";
+import type { Metadata } from "next"
+import './globals.css'
+import { Inter } from 'next/font/google'
+import Script from 'next/script'
+
+const inter = Inter({ subsets: ['latin'] })
+
+export const metadata: Metadata = {
+  title: 'Telegram Mini App',
+  description: 'A simple Telegram mini app using Next.js and Prisma',
+}
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en">
-      <head>
-        <title>TON Connect Demo</title>
-      </head>
-      <body>
-        <TonConnectUIProvider manifestUrl="https://violet-traditional-rabbit-103.mypinata.cloud/ipfs/QmQJJAdZ2qSwdepvb5evJq7soEBueFenHLX3PoM6tiBffm">
-          {children}
-        </TonConnectUIProvider>
+      <body className={inter.className}>
+        <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
+                <TonConnectUIProvider manifestUrl="https://violet-traditional-rabbit-103.mypinata.cloud/ipfs/QmQJJAdZ2qSwdepvb5evJq7soEBueFenHLX3PoM6tiBffm">  
+                  {children}       
+                </TonConnectUIProvider>
+        {children}
       </body>
     </html>
-  );
+  )
 }
