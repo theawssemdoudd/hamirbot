@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface Task {
   id: number;
@@ -10,7 +10,11 @@ interface Task {
 }
 
 const TasksPage = ({ tasks, telegramId }: { tasks: Task[]; telegramId: string }) => {
-  const [taskList, setTaskList] = useState<Task[]>(tasks);
+  const [taskList, setTaskList] = useState<Task[]>(() => {
+    // تحميل المهام المكتملة من LocalStorage
+    const completedTasks = JSON.parse(localStorage.getItem('completedTasks') || '[]');
+    return tasks.filter(task => !completedTasks.includes(task.id));
+  });
 
   const handleTaskClick = async (taskId: number) => {
     try {
@@ -44,6 +48,11 @@ const TasksPage = ({ tasks, telegramId }: { tasks: Task[]; telegramId: string })
       }
 
       setTaskList(prevTasks => prevTasks.filter(t => t.id !== taskId));
+
+      // حفظ المهمة المكتملة في LocalStorage
+      const completedTasks = JSON.parse(localStorage.getItem('completedTasks') || '[]');
+      completedTasks.push(taskId);
+      localStorage.setItem('completedTasks', JSON.stringify(completedTasks));
     } catch (error) {
       console.error('Error updating points:', error);
     }
