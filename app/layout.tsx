@@ -20,10 +20,9 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {/* تحويل العنوان إلى نص صريح */}
-        <title>{typeof metadata.title === "string" ? metadata.title : "Default Title"}</title>
+        <title></title>
       </head>
-      <body className={inter.className}>
-        {/* تضمين مكتبة Telegram */}
+      <body>
         <Script
           src="https://telegram.org/js/telegram-web-app.js"
           strategy="beforeInteractive"
