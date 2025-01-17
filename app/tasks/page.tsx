@@ -45,7 +45,10 @@ const TasksPage = ({ tasks, telegramId }: { tasks: Task[], telegramId: string })
       if (!response.ok) {
         throw new Error('Failed to update points');
       }
-
+const tasks = [
+  { id: 1, title: 'Task 1', url: 'https://example.com/task1', completed: false },
+  { id: 2, title: 'Task 2', url: 'https://example.com/task2', completed: false },
+];
       // قم بإخفاء المهمة بعد الضغط على "Check"
       setTaskList(prevTasks => prevTasks.filter(t => t.id !== taskId));
     } catch (error) {
