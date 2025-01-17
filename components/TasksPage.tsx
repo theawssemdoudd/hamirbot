@@ -1,5 +1,5 @@
 'use client'
-
+import BottomNavigation from '@/components/BottomNavigation'; 
 import { useState, useEffect } from 'react';
 
 interface Task {
@@ -10,11 +10,13 @@ interface Task {
 }
 
 const TasksPage = ({ tasks, telegramId }: { tasks: Task[]; telegramId: string }) => {
-  const [taskList, setTaskList] = useState<Task[]>(() => {
-    // تحميل المهام المكتملة من LocalStorage
+  const [taskList, setTaskList] = useState<Task[]>(tasks);
+
+  useEffect(() => {
+    // تحميل المهام المكتملة من localStorage (يعمل فقط على العميل)
     const completedTasks = JSON.parse(localStorage.getItem('completedTasks') || '[]');
-    return tasks.filter(task => !completedTasks.includes(task.id));
-  });
+    setTaskList(prevTasks => prevTasks.filter(task => !completedTasks.includes(task.id)));
+  }, []);
 
   const handleTaskClick = async (taskId: number) => {
     try {
@@ -49,7 +51,7 @@ const TasksPage = ({ tasks, telegramId }: { tasks: Task[]; telegramId: string })
 
       setTaskList(prevTasks => prevTasks.filter(t => t.id !== taskId));
 
-      // حفظ المهمة المكتملة في LocalStorage
+      // حفظ المهمة المكتملة في localStorage (يعمل فقط على العميل)
       const completedTasks = JSON.parse(localStorage.getItem('completedTasks') || '[]');
       completedTasks.push(taskId);
       localStorage.setItem('completedTasks', JSON.stringify(completedTasks));
@@ -83,6 +85,7 @@ const TasksPage = ({ tasks, telegramId }: { tasks: Task[]; telegramId: string })
           </div>
         </div>
       ))}
+     <BottomNavigation />
     </div>
   );
 };
