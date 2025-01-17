@@ -1,90 +1,95 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useTonConnectUI } from '@tonconnect/ui-react';
+import { Address } from "@ton/core";
 
-interface Task {
-  id: number;
-  title: string;
-  url: string;
-  completed: boolean;
-}
+export default function Home() {
+  const [tonConnectUI] = useTonConnectUI();
+  const [tonWalletAddress, setTonWalletAddress] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-const TasksPage = ({ tasks, telegramId }: { tasks: Task[]; telegramId: string }) => {
-  const [taskList, setTaskList] = useState<Task[]>(() => {
-    // تحميل المهام المكتملة من LocalStorage
-    const completedTasks = JSON.parse(localStorage.getItem('completedTasks') || '[]');
-    return tasks.filter(task => !completedTasks.includes(task.id));
-  });
+  const handleWalletConnection = useCallback((address: string) => {
+    setTonWalletAddress(address);
+    console.log("Wallet connected successfully!");
+    setIsLoading(false);
+  }, []);
 
-  const handleTaskClick = async (taskId: number) => {
-    try {
-      const task = taskList.find(t => t.id === taskId);
-      if (task) {
-        window.open(task.url, '_blank');
+  const handleWalletDisconnection = useCallback(() => {
+    setTonWalletAddress(null);
+    console.log("Wallet disconnected successfully!");
+    setIsLoading(false);
+  }, []);
+
+  useEffect(() => {
+    const checkWalletConnection = async () => {
+      if (tonConnectUI.account?.address) {
+        handleWalletConnection(tonConnectUI.account?.address);
+      } else {
+        handleWalletDisconnection();
       }
+    };
 
-      setTaskList(prevTasks =>
-        prevTasks.map(t =>
-          t.id === taskId ? { ...t, completed: true } : t
-        )
-      );
-    } catch (error) {
-      console.error('Error opening task:', error);
+    checkWalletConnection();
+
+    const unsubscribe = tonConnectUI.onStatusChange((wallet) => {
+      if (wallet) {
+        handleWalletConnection(wallet.account.address);
+      } else {
+        handleWalletDisconnection();
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [tonConnectUI, handleWalletConnection, handleWalletDisconnection]);
+
+  const handleWalletAction = async () => {
+    if (tonConnectUI.connected) {
+      setIsLoading(true);
+      await tonConnectUI.disconnect();
+    } else {
+      await tonConnectUI.openModal();
     }
   };
 
-  const handleCheckClick = async (taskId: number) => {
-    try {
-      const response = await fetch('/api/update-points', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ telegramId }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update points');
-      }
-
-      setTaskList(prevTasks => prevTasks.filter(t => t.id !== taskId));
-
-      // حفظ المهمة المكتملة في LocalStorage
-      const completedTasks = JSON.parse(localStorage.getItem('completedTasks') || '[]');
-      completedTasks.push(taskId);
-      localStorage.setItem('completedTasks', JSON.stringify(completedTasks));
-    } catch (error) {
-      console.error('Error updating points:', error);
-    }
+  const formatAddress = (address: string) => {
+    const tempAddress = Address.parse(address).toString();
+    return `${tempAddress.slice(0, 4)}...${tempAddress.slice(-4)}`;
   };
+
+  if (isLoading) {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center">
+        <div className="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded">
+          Loading...
+        </div>
+      </main>
+    );
+  }
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-      <h1 style={{ fontSize: '2rem', marginBottom: '20px' }}>Tasks</h1>
-      {taskList.map(task => (
-        <div key={task.id} style={{ marginBottom: '15px', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span>{task.title}</span>
-            {!task.completed ? (
-              <button
-                onClick={() => handleTaskClick(task.id)}
-                style={{ padding: '5px 10px', backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '3px' }}
-              >
-                Start
-              </button>
-            ) : (
-              <button
-                onClick={() => handleCheckClick(task.id)}
-                style={{ padding: '5px 10px', backgroundColor: '#28A745', color: 'white', border: 'none', borderRadius: '3px' }}
-              >
-                Check
-              </button>
-            )}
-          </div>
+    <main className="flex min-h-screen flex-col items-center justify-center">
+      <h1 className="text-4xl font-bold mb-8">TON Connect Demo</h1>
+      {tonWalletAddress ? (
+        <div className="flex flex-col items-center">
+          <p className="mb-4">Connected: {formatAddress(tonWalletAddress)}</p>
+          <button
+            onClick={handleWalletAction}
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Disconnect Wallet
+          </button>
         </div>
-      ))}
-    </div>
+      ) : (
+        <button
+          onClick={handleWalletAction}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Connect TON Wallet
+        </button>
+      )}
+    </main>
   );
-};
-
-export default TasksPage;
+}
