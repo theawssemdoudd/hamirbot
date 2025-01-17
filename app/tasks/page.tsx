@@ -5,78 +5,62 @@ import { useState } from 'react';
 interface Task {
   id: number;
   title: string;
+  url: string;
+  points: number;
   completed: boolean;
 }
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([
-    { id: 1, title: 'First Task', completed: false },
-    { id: 2, title: 'Second Task', completed: true },
+    { id: 1, title: 'Visit Example Site', url: 'https://example.com', points: 10, completed: false },
+    { id: 2, title: 'Check Blog Post', url: 'https://example.com/blog', points: 15, completed: false },
   ]);
 
-  const [newTask, setNewTask] = useState('');
+  const [userPoints, setUserPoints] = useState(0);
 
-  const handleAddTask = () => {
-    if (newTask.trim() === '') return;
-    setTasks([...tasks, { id: Date.now(), title: newTask, completed: false }]);
-    setNewTask('');
-  };
-
-  const handleToggleTask = (id: number) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
-  };
-
-  const handleDeleteTask = (id: number) => {
-    setTasks(tasks.filter((task) => task.id !== id));
+  const handleCompleteTask = (id: number, points: number) => {
+    setTasks(tasks.filter((task) => task.id !== id)); // إزالة المهمة من القائمة
+    setUserPoints(userPoints + points); // إضافة النقاط
+    // يمكن هنا استدعاء API لتحديث النقاط في قاعدة البيانات
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4">
+    <main className="flex flex-col items-center justify-center min-h-screen p-4">
       <h1 className="text-4xl font-bold mb-6">Tasks</h1>
 
-      {/* إضافة مهمة جديدة */}
-      <div className="flex mb-4">
-        <input
-          type="text"
-          value={newTask}
-          onChange={(e) => setNewTask(e.target.value)}
-          placeholder="Enter a new task"
-          className="border rounded px-4 py-2 mr-2"
-        />
-        <button
-          onClick={handleAddTask}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Add Task
-        </button>
+      {/* عرض النقاط الحالية */}
+      <div className="mb-4 text-lg font-medium">
+        Your Points: <span className="text-blue-500">{userPoints}</span>
       </div>
 
       {/* قائمة المهام */}
-      <ul className="w-full max-w-md">
+      <ul className="w-full max-w-lg">
         {tasks.map((task) => (
           <li
             key={task.id}
-            className={`flex justify-between items-center p-2 border-b ${
-              task.completed ? 'line-through text-gray-500' : ''
-            }`}
+            className="flex justify-between items-center p-4 border-b"
           >
-            <span onClick={() => handleToggleTask(task.id)} className="cursor-pointer">
-              {task.title}
-            </span>
-            <button
-              onClick={() => handleDeleteTask(task.id)}
-              className="text-red-500 hover:text-red-700"
-            >
-              Delete
-            </button>
+            <span className="text-lg">{task.title}</span>
+            {!task.completed ? (
+              <button
+                onClick={() => window.open(task.url, '_blank')}
+                className="bg-blue-500 hover:bg-blue-700 text-white py-1 px-4 rounded"
+              >
+                Task
+              </button>
+            ) : (
+              <button
+                onClick={() => handleCompleteTask(task.id, task.points)}
+                className="bg-green-500 hover:bg-green-700 text-white py-1 px-4 rounded"
+              >
+                Check
+              </button>
+            )}
           </li>
         ))}
       </ul>
     </main>
   );
 }
+
 
