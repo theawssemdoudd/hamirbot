@@ -1,14 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-
-interface Task {
-  id: number;
-  title: string;
-  url: string;
-  points: number;
-  completed: boolean;
-}
+import BottomNavigation from '@/components/BottomNavigation'; // استيراد الشريط السفلي
 
 declare global {
   interface Window {
@@ -17,29 +10,25 @@ declare global {
     };
   }
 }
-
-export default function TasksPage() {
-  const [tasks, setTasks] = useState<Task[]>([
-    { id: 1, title: 'Visit Example Site', url: 'https://example.com', points: 10, completed: false },
-    { id: 2, title: 'Check Blog Post', url: 'https://example.com/blog', points: 15, completed: false },
-  ]);
-  const [userPoints, setUserPoints] = useState(0);
+ 
+export default function Home() {
   const [user, setUser] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [points, setPoints] = useState<number>(0);
 
   useEffect(() => {
-    // التأكد من وجود Telegram WebApp
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
       const tg = window.Telegram.WebApp;
       tg.ready();
 
       const initDataUnsafe = tg.initDataUnsafe || {};
 
-      // جلب بيانات المستخدم
       if (initDataUnsafe.user) {
         fetch('/api/user', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+          },
           body: JSON.stringify(initDataUnsafe.user),
         })
           .then((res) => res.json())
@@ -48,7 +37,7 @@ export default function TasksPage() {
               setError(data.error);
             } else {
               setUser(data);
-              setUserPoints(data.points || 0); // إعداد النقاط من البيانات القادمة
+              setPoints(data.points || 0); // إعداد النقاط من البيانات القادمة
             }
           })
           .catch((err) => {
@@ -63,26 +52,19 @@ export default function TasksPage() {
     }
   }, []);
 
-  const handleOpenTask = (id: number) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === id ? { ...task, completed: true } : task
-      )
-    );
-  };
+  const handleImageClick = () => {
+    const newPoints = points + 1;
+    setPoints(newPoints);
 
-  const handleCompleteTask = async (id: number, points: number) => {
-    const newPoints = userPoints + points; // حساب النقاط الجديدة
-    setUserPoints(newPoints); // تحديث النقاط محليًا
-    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id)); // إزالة المهمة المكتملة
-
-    // إرسال البيانات باستخدام الكود الخاص بك
-    await fetch('/api/user', {
+    // إرسال النقاط و telegramId إلى المسار الصحيح
+    fetch('/api/increase-points', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
-        telegramId: user?.telegramId, // إرسال معرّف المستخدم
-        points: newPoints, // النقاط الجديدة
+        telegramId: user.telegramId, // إرسال معرّف المستخدم
+        points: newPoints,
       }),
     })
       .then((res) => res.json())
@@ -105,44 +87,28 @@ export default function TasksPage() {
   if (!user) return <div className="container mx-auto p-4">Loading...</div>;
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen p-4">
-      <h1 className="text-4xl font-bold mb-6">Tasks</h1>
+    <div className="container mx-auto p-4 bg-gray-100">
+      {/* خط علوي */}
+      <hr className="border-t-4 border-gray-300 mb-4" />
 
-      {/* عرض النقاط الحالية */}
-      <div className="mb-4 text-lg font-medium">
-        Your Points: <span className="text-blue-500">{userPoints}</span>
+      <h1 className="text-2xl font-bold mb-4">Welcome, {user.firstName}!</h1>
+      <p>Your current points: {points}</p>
+
+      {/* صورة قابلة للنقر */}
+      <div className="my-4 text-center">
+        <img
+          src="../images/background.png"
+          alt="Click me"
+          className="cursor-pointer mx-auto w-32 h-32"
+          onClick={handleImageClick}
+        />
       </div>
 
-      {/* قائمة المهام */}
-      <ul className="w-full max-w-lg">
-        {tasks.map((task) => (
-          <li
-            key={task.id}
-            className="flex justify-between items-center p-4 border-b"
-          >
-            <span className="text-lg">{task.title}</span>
-            {!task.completed ? (
-              <button
-                onClick={() => {
-                  window.open(task.url, '_blank');
-                  handleOpenTask(task.id);
-                }}
-                className="bg-blue-500 hover:bg-blue-700 text-white py-1 px-4 rounded"
-              >
-                Task
-              </button>
-            ) : (
-              <button
-                onClick={() => handleCompleteTask(task.id, task.points)}
-                className="bg-green-500 hover:bg-green-700 text-white py-1 px-4 rounded"
-              >
-                Check
-              </button>
-            )}
-          </li>
-        ))}
-      </ul>
-    </main>
+      {/* خط سفلي */}
+      <hr className="border-t-4 border-gray-300 mt-4" />
+
+      {/* إضافة الشريط السفلي */}
+      <BottomNavigation />
+    </div>
   );
 }
-
