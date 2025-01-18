@@ -20,10 +20,12 @@ export default function TasksPage() {
 
   useEffect(() => {
     // جلب النقاط من قاعدة البيانات عند تحميل الصفحة
-    fetch('/api/get-points')
-      .then((res) => res.json())
-      .then((data) => setUserPoints(data.points || 0));
-  }, []);
+fetch('/api/user', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(initDataUnsafe.user),
+})
+
 
   const handleOpenTask = (id: number) => {
     // تحديث المهمة لجعلها مكتملة
