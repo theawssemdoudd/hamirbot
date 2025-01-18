@@ -77,7 +77,7 @@ export default function TasksPage() {
     setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id)); // إزالة المهمة المكتملة
 
     // إرسال البيانات باستخدام الكود الخاص بك
-    await fetch('/api/user', {
+    await fetch('/api/increase-points', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
