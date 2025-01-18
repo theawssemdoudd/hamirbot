@@ -76,12 +76,26 @@ export default function TasksPage() {
     setUserPoints(newPoints); // تحديث النقاط محليًا
     setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id)); // إزالة المهمة المكتملة
 
-    // استدعاء API لتحديث النقاط في قاعدة البيانات
-    await fetch('/api/update-points', {
+    // إرسال البيانات باستخدام الكود الخاص بك
+    await fetch('/api/user', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ telegramId: user.telegramId, points }),
-    });
+      body: JSON.stringify({
+        telegramId: user?.telegramId, // إرسال معرّف المستخدم
+        points: newPoints, // النقاط الجديدة
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) {
+          console.error('Error updating points:', data.error);
+        } else {
+          console.log('Points updated successfully');
+        }
+      })
+      .catch((err) => {
+        console.error('Error updating points:', err);
+      });
   };
 
   if (error) {
@@ -131,3 +145,4 @@ export default function TasksPage() {
     </main>
   );
 }
+
