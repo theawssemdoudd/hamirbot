@@ -1,22 +1,32 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
 
-export async function GET(req: NextRequest) {
-  try {
-    // استبدل بـ `telegramId` أو أي تعريف مستخدم آخر إذا لزم الأمر
-    const telegramId = 'some-telegram-id';
+export async function POST(req: NextRequest) {
+    try {
+        const { telegramId } = await req.json()
 
-    const user = await prisma.user.findUnique({
-      where: { telegramId },
-    });
+        if (!telegramId) {
+            return NextResponse.json({ error: 'Invalid telegramId' }, { status: 400 })
+        }
 
-    if (!user) {
-      return NextResponse.json({ points: 0 }); // إذا لم يتم العثور على المستخدم، يرجع صفر
+        // تحقق من وجود المستخدم
+        const user = await prisma.user.findUnique({
+            where: { telegramId },
+        })
+
+        if (!user) {
+            return NextResponse.json({ error: 'User not found' }, { status: 404 })
+        }
+
+        // تحديث النقاط
+        const updatedUser = await prisma.user.update({
+            where: { telegramId },
+            data: { points: { increment: 1 } }
+        })
+
+        return NextResponse.json({ success: true, points: updatedUser.points })
+    } catch (error) {
+        console.error('Error increasing points:', error)
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
-
-    return NextResponse.json({ points: user.points });
-  } catch (error) {
-    console.error('Error fetching points:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
 }
