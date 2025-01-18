@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface Task {
   id: number;
@@ -18,10 +18,33 @@ export default function TasksPage() {
 
   const [userPoints, setUserPoints] = useState(0);
 
-  const handleCompleteTask = (id: number, points: number) => {
-    setTasks(tasks.filter((task) => task.id !== id)); // إزالة المهمة من القائمة
-    setUserPoints(userPoints + points); // إضافة النقاط
-    // يمكن هنا استدعاء API لتحديث النقاط في قاعدة البيانات
+  useEffect(() => {
+    // جلب النقاط من قاعدة البيانات عند تحميل الصفحة
+    fetch('/api/get-points')
+      .then((res) => res.json())
+      .then((data) => setUserPoints(data.totalPoints));
+  }, []);
+
+  const handleOpenTask = (id: number) => {
+    // تحديث المهمة لجعلها مكتملة
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === id ? { ...task, completed: true } : task
+      )
+    );
+  };
+
+  const handleCompleteTask = async (id: number, points: number) => {
+    // إزالة المهمة وتحديث النقاط
+    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+    setUserPoints((prevPoints) => prevPoints + points);
+
+    // استدعاء API لتحديث النقاط
+    await fetch('/api/update-points', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ points }),
+    });
   };
 
   return (
@@ -43,7 +66,10 @@ export default function TasksPage() {
             <span className="text-lg">{task.title}</span>
             {!task.completed ? (
               <button
-                onClick={() => window.open(task.url, '_blank')}
+                onClick={() => {
+                  window.open(task.url, '_blank');
+                  handleOpenTask(task.id);
+                }}
                 className="bg-blue-500 hover:bg-blue-700 text-white py-1 px-4 rounded"
               >
                 Task
@@ -62,5 +88,4 @@ export default function TasksPage() {
     </main>
   );
 }
-
 
