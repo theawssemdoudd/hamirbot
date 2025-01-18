@@ -22,7 +22,7 @@ export default function TasksPage() {
     // جلب النقاط من قاعدة البيانات عند تحميل الصفحة
     fetch('/api/get-points')
       .then((res) => res.json())
-      .then((data) => setUserPoints(data.totalPoints));
+      .then((data) => setUserPoints(data.points || 0));
   }, []);
 
   const handleOpenTask = (id: number) => {
