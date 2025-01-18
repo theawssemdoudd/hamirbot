@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import BottomNavigation from '@/components/BottomNavigation'; // استيراد الشريط السفلي
+import BottomNavigation from '@/components/BottomNavigation';
 
 declare global {
   interface Window {
@@ -45,7 +45,7 @@ export default function TasksPage() {
               setError(data.error);
             } else {
               setUser(data);
-              setPoints(data.points || 0); // إعداد النقاط من البيانات القادمة
+              setPoints(data.points || 0);
               fetchTasks(); // جلب المهام بعد تحميل بيانات المستخدم
             }
           })
@@ -99,7 +99,7 @@ export default function TasksPage() {
       }
 
       // إرسال طلب POST لتحديث النقاط
-      const response = await fetch('/api/increase-points', {
+      const response = await fetch('/api/update-points', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
