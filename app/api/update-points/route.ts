@@ -9,15 +9,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid telegramId' }, { status: 400 });
     }
 
-    // تحقق من وجود المستخدم
-    const user = await prisma.user.findUnique({
-      where: { telegramId },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
     // تحديث النقاط
     const updatedUser = await prisma.user.update({
       where: { telegramId },
