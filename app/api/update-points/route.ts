@@ -1,23 +1,31 @@
-const handleCompleteTask = async (telegramId: string) => {
-  try {
-    const response = await fetch('/api/update-points', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ telegramId }),
-    });
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
 
-    const data = await response.json();
-    if (!response.ok) {
-      console.error('Error:', data.error);
-      alert(data.error);
-    } else {
-      console.log('Success:', data.points);
-      alert(`Points updated successfully! New points: ${data.points}`);
+export async function POST(req: NextRequest) {
+    try {
+        const { telegramId } = await req.json()
+
+        if (!telegramId) {
+            return NextResponse.json({ error: 'Invalid telegramId' }, { status: 400 })
+        }
+
+        // تحقق من وجود المستخدم
+        const user = await prisma.user.findUnique({
+            where: { telegramId },
+        })
+
+        if (!user) {
+            return NextResponse.json({ error: 'User not found' }, { status: 404 })
+        }
+
+        // تحديث النقاط
+        const updatedUser = await prisma.user.update({
+            where: { telegramId },
+            data: { totalPoints: { increment: 1 } }
+        })
+
+        return NextResponse.json({ success: true, points: updatedUser.points })
+    } catch (error) {
+        console.error('Error increasing points:', error)
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
-  } catch (error) {
-    console.error('Request failed:', error);
-    alert('An error occurred.');
-  }
-};
