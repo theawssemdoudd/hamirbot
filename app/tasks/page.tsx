@@ -10,25 +10,60 @@ interface Task {
   completed: boolean;
 }
 
+declare global {
+  interface Window {
+    Telegram?: {
+      WebApp: any;
+    };
+  }
+}
+
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([
     { id: 1, title: 'Visit Example Site', url: 'https://example.com', points: 10, completed: false },
     { id: 2, title: 'Check Blog Post', url: 'https://example.com/blog', points: 15, completed: false },
   ]);
-
   const [userPoints, setUserPoints] = useState(0);
+  const [user, setUser] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // جلب النقاط من قاعدة البيانات عند تحميل الصفحة
-fetch('/api/user', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(initDataUnsafe.user),
-})
+    // التأكد من وجود Telegram WebApp
+    if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+      const tg = window.Telegram.WebApp;
+      tg.ready();
 
+      const initDataUnsafe = tg.initDataUnsafe || {};
+
+      // جلب بيانات المستخدم
+      if (initDataUnsafe.user) {
+        fetch('/api/user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(initDataUnsafe.user),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.error) {
+              setError(data.error);
+            } else {
+              setUser(data);
+              setUserPoints(data.points || 0); // إعداد النقاط من البيانات القادمة
+            }
+          })
+          .catch((err) => {
+            console.error('Error fetching user data:', err);
+            setError('Failed to fetch user data');
+          });
+      } else {
+        setError('No user data available');
+      }
+    } else {
+      setError('This app should be opened in Telegram');
+    }
+  }, []);
 
   const handleOpenTask = (id: number) => {
-    // تحديث المهمة لجعلها مكتملة
     setTasks((prevTasks) =>
       prevTasks.map((task) =>
         task.id === id ? { ...task, completed: true } : task
@@ -45,9 +80,15 @@ fetch('/api/user', {
     await fetch('/api/update-points', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ points, telegramId: 'user-telegram-id' }),
+      body: JSON.stringify({ telegramId: user.telegramId, points }),
     });
   };
+
+  if (error) {
+    return <div className="container mx-auto p-4 text-red-500">{error}</div>;
+  }
+
+  if (!user) return <div className="container mx-auto p-4">Loading...</div>;
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen p-4">
