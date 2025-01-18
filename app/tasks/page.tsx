@@ -76,10 +76,12 @@ export default function TasksPage() {
     setUserPoints(newPoints); // تحديث النقاط محليًا
     setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id)); // إزالة المهمة المكتملة
 
-    // إرسال البيانات باستخدام الكود الخاص بك
+    // إرسال البيانات إلى الخادم
     await fetch('/api/increase-points', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
         telegramId: user?.telegramId, // إرسال معرّف المستخدم
         points: newPoints, // النقاط الجديدة
@@ -145,4 +147,3 @@ export default function TasksPage() {
     </main>
   );
 }
-
