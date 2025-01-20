@@ -23,6 +23,17 @@ export default function TasksPage() {
     { id: 1, title: 'Visit Example Site', url: 'https://example.com', points: 10, completed: false },
     { id: 2, title: 'Check Blog Post', url: 'https://example.com/blog', points: 15, completed: false },
   ]);
+  useEffect(() => {
+  const savedTasks = localStorage.getItem('tasks');
+  if (savedTasks) {
+    setTasks(JSON.parse(savedTasks));
+  }
+}, []);
+
+useEffect(() => {
+  localStorage.setItem('tasks', JSON.stringify(tasks));
+}, [tasks]);
+
   const [userPoints, setUserPoints] = useState(0);
   const [user, setUser] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
