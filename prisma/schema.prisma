@@ -8,15 +8,19 @@ generator client {
 }
 
 model User {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  telegramId Int      @unique
-  username   String?
-  firstName  String?
-  lastName   String?
-  points     Int      @default(0)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  telegramId  Int      @unique
+  username    String?
+  firstName   String?
+  lastName    String?
+  points      Int      @default(0)
+  referrerId  String?  @db.ObjectId
+  referrals   User[]   @relation("UserReferrals", "referrerId")
+  walletAddress String? // عنوان المحفظة (اختياري)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
+
 
 
 
