@@ -88,7 +88,7 @@ useEffect(() => {
     setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id)); // إزالة المهمة المكتملة
 
     // إرسال البيانات إلى الخادم
-    await fetch('/api/increase-points', {
+    await fetch('/api/update-points', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
