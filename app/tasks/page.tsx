@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import BottomNavigation from '@/components/BottomNavigation';
 
 interface Task {
   id: number;
@@ -19,34 +20,41 @@ declare global {
 }
 
 export default function TasksPage() {
-  const [tasks, setTasks] = useState<Task[]>([
-    { id: 1, title: 'Visit Example Site', url: 'https://example.com', points: 10, completed: false },
-    { id: 2, title: 'Check Blog Post', url: 'https://example.com/blog', points: 15, completed: false },
-  ]);
-  useEffect(() => {
-  const savedTasks = localStorage.getItem('tasks');
-  if (savedTasks) {
-    setTasks(JSON.parse(savedTasks));
-  }
-}, []);
-
-useEffect(() => {
-  localStorage.setItem('tasks', JSON.stringify(tasks));
-}, [tasks]);
-
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [userPoints, setUserPoints] = useState(0);
   const [user, setUser] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // تحميل بيانات المهام المخزنة للمستخدم الحالي
   useEffect(() => {
-    // التأكد من وجود Telegram WebApp
+    if (user?.telegramId) {
+      const savedTasks = localStorage.getItem(`tasks_${user.telegramId}`);
+      if (savedTasks) {
+        setTasks(JSON.parse(savedTasks));
+      } else {
+        setTasks([
+          { id: 1, title: 'Visit Example Site', url: 'https://example.com', points: 10, completed: false },
+          { id: 2, title: 'Check Blog Post', url: 'https://example.com/blog', points: 15, completed: false },
+        ]);
+      }
+    }
+  }, [user]);
+
+  // حفظ المهام عند تغييرها
+  useEffect(() => {
+    if (user?.telegramId) {
+      localStorage.setItem(`tasks_${user.telegramId}`, JSON.stringify(tasks));
+    }
+  }, [tasks, user]);
+
+  // التأكد من وجود Telegram WebApp
+  useEffect(() => {
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
       const tg = window.Telegram.WebApp;
       tg.ready();
 
       const initDataUnsafe = tg.initDataUnsafe || {};
 
-      // جلب بيانات المستخدم
       if (initDataUnsafe.user) {
         fetch('/api/user', {
           method: 'POST',
@@ -59,7 +67,7 @@ useEffect(() => {
               setError(data.error);
             } else {
               setUser(data);
-              setUserPoints(data.points || 0); // إعداد النقاط من البيانات القادمة
+              setUserPoints(data.points || 0);
             }
           })
           .catch((err) => {
@@ -83,19 +91,18 @@ useEffect(() => {
   };
 
   const handleCompleteTask = async (id: number, points: number) => {
-    const newPoints = userPoints + points; // حساب النقاط الجديدة
-    setUserPoints(newPoints); // تحديث النقاط محليًا
-    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id)); // إزالة المهمة المكتملة
+    const newPoints = userPoints + points;
+    setUserPoints(newPoints);
+    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
 
-    // إرسال البيانات إلى الخادم
     await fetch('/api/update-points', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        telegramId: user?.telegramId, // إرسال معرّف المستخدم
-        points: newPoints, // النقاط الجديدة
+        telegramId: user?.telegramId,
+        points: newPoints,
       }),
     })
       .then((res) => res.json())
@@ -121,12 +128,10 @@ useEffect(() => {
     <main className="flex flex-col items-center justify-center min-h-screen p-4">
       <h1 className="text-4xl font-bold mb-6">Tasks</h1>
 
-      {/* عرض النقاط الحالية */}
       <div className="mb-4 text-lg font-medium">
         Your Points: <span className="text-blue-500">{userPoints}</span>
       </div>
 
-      {/* قائمة المهام */}
       <ul className="w-full max-w-lg">
         {tasks.map((task) => (
           <li
@@ -155,6 +160,7 @@ useEffect(() => {
           </li>
         ))}
       </ul>
+      <BottomNavigation />
     </main>
   );
 }
