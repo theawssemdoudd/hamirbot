@@ -97,7 +97,7 @@ export default function Home() {
       {/* صورة قابلة للنقر */}
       <div className="my-4 text-center">
         <img
-          src="/images/background.png"
+          src="images/background.png"
           alt="Click me"
           className="cursor-pointer mx-auto w-32 h-32"
           onClick={handleImageClick}
