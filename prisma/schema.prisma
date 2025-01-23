@@ -13,10 +13,10 @@ model User {
   username    String?
   firstName   String?
   lastName    String?
+  wallet      String?
   points      Int      @default(0)
   referrerId  String?  @db.ObjectId
-  referrals   User[]   @relation("UserReferrals", "referrerId")
-  walletAddress String? // عنوان المحفظة (اختياري)
+  referrals   User[]   @relation("UserReferrals", fields: [id], references: [referrerId])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
