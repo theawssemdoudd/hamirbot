@@ -1,5 +1,5 @@
 'use client';
-
+import BottomNavigation from '@/components/BottomNavigation';
 import { useState, useEffect, useCallback } from 'react';
 import { useTonConnectUI } from '@tonconnect/ui-react';
 import { Address } from "@ton/core";
@@ -90,6 +90,7 @@ export default function Home() {
           Connect TON Wallet
         </button>
       )}
+     <BottomNavigation />
     </main>
   );
 }
