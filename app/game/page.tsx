@@ -2,49 +2,35 @@
 
 import BottomNavigation from '@/components/BottomNavigation';  //
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 
-export default function ReferralPage({ params }: { params: { referrerId: string } }) {
-  const { referrerId } = params;
-  const router = useRouter();
+import ReferralSystem from '@/components/ReferralSystem'
+import { useEffect, useState } from 'react'
+
+export default function Home() {
+  const [initData, setInitData] = useState('')
+  const [userId, setUserId] = useState('')
+  const [startParam, setStartParam] = useState('')
 
   useEffect(() => {
-    // إرسال معرف المحيل إلى الخادم
-    const registerReferral = async () => {
-      try {
-        const res = await fetch('/api/ref', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ referrerId }),
-        });
-
-        if (res.ok) {
-          console.log('Referral registered successfully');
-        } else {
-          console.error('Failed to register referral');
-        }
-      } catch (err) {
-        console.error('Error:', err);
+    const initWebApp = async () => {
+      if (typeof window !== 'undefined') {
+        const WebApp = (await import('@twa-dev/sdk')).default;
+        WebApp.ready();
+        setInitData(WebApp.initData);
+        setUserId(WebApp.initDataUnsafe.user?.id.toString() || '');
+        setStartParam(WebApp.initDataUnsafe.start_param || '');
       }
     };
 
-    registerReferral();
-  }, [referrerId]);
+    initWebApp();
+  }, [])
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold">Welcome!</h1>
-      <p>You were referred by user ID: {referrerId}.</p>
-      <p>Sign up or log in to start earning rewards.</p>
-      <button
-        onClick={() => router.push('/game')}
-        className="bg-blue-500 text-white px-4 py-2 rounded"
-      >
-        Go to Game
-      </button>
-    </div>
-  );
-}
-       <BottomNavigation />
+    <main className="flex min-h-screen flex-col items-center justify-center p-24">
+      <h1 className="text-4xl font-bold mb-8">Telegram Referral Demo</h1>
+      <ReferralSystem initData={initData} userId={userId} startParam={startParam} />
+      <BottomNavigation />
+    </main>
+  )
+}     
 
