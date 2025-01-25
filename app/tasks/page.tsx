@@ -25,7 +25,6 @@ export default function TasksPage() {
   const [user, setUser] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // تحميل بيانات المهام المخزنة للمستخدم الحالي
   useEffect(() => {
     if (user?.telegramId) {
       const savedTasks = localStorage.getItem(`tasks_${user.telegramId}`);
@@ -40,14 +39,12 @@ export default function TasksPage() {
     }
   }, [user]);
 
-  // حفظ المهام عند تغييرها
   useEffect(() => {
     if (user?.telegramId) {
       localStorage.setItem(`tasks_${user.telegramId}`, JSON.stringify(tasks));
     }
   }, [tasks, user]);
 
-  // التأكد من وجود Telegram WebApp
   useEffect(() => {
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
       const tg = window.Telegram.WebApp;
@@ -125,34 +122,34 @@ export default function TasksPage() {
   if (!user) return <div className="container mx-auto p-4">Loading...</div>;
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen p-4">
+    <main className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-900 text-white">
       <h1 className="text-4xl font-bold mb-6">Tasks</h1>
 
       <div className="mb-4 text-lg font-medium">
-        Your Points: <span className="text-blue-500">{userPoints}</span>
+        Your Points: <span className="text-green-400">{userPoints}</span>
       </div>
 
-      <ul className="w-full max-w-lg">
+      <ul className="w-full max-w-lg bg-gray-800 rounded-lg shadow-lg">
         {tasks.map((task) => (
           <li
             key={task.id}
-            className="flex justify-between items-center p-4 border-b"
+            className="flex justify-between items-center p-4 border-b border-gray-700 last:border-none"
           >
-            <span className="text-lg">{task.title}</span>
+            <span className="text-lg font-semibold">{task.title}</span>
             {!task.completed ? (
               <button
                 onClick={() => {
                   window.open(task.url, '_blank');
                   handleOpenTask(task.id);
                 }}
-                className="bg-blue-500 hover:bg-blue-700 text-white py-1 px-4 rounded"
+                className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded transition-all"
               >
                 Task
               </button>
             ) : (
               <button
                 onClick={() => handleCompleteTask(task.id, task.points)}
-                className="bg-green-500 hover:bg-green-700 text-white py-1 px-4 rounded"
+                className="bg-green-500 hover:bg-green-600 text-white py-1 px-4 rounded transition-all"
               >
                 Check
               </button>
