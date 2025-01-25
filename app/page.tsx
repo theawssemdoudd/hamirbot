@@ -99,7 +99,7 @@ export default function Home() {
         <div className="bg-gray-800 rounded-xl p-6 shadow-lg text-center border border-gray-700">
           <p className="text-xl font-medium text-gray-300 mb-4">Click the image below to earn points!</p>
           <img
-            src="/images/background.png"
+            src="/images/dog.png"
             alt="Click to earn points"
             className="cursor-pointer mx-auto w-40 h-40 rounded-xl border-4 border-blue-500 shadow-md transition-transform duration-300 hover:scale-105"
             onClick={handleImageClick}
