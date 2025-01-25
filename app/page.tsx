@@ -87,9 +87,9 @@ export default function Home() {
   if (!user) return <div className="container mx-auto p-4">Loading...</div>;
 
   return (
-    <div className="container mx-auto p-4 bg-gray-100">
+    <div className="container mx-auto p-4 bg-gradient-to-b from-gray-900 to-black text-white">
       {/* خط علوي */}
-      <hr className="border-t-4 border-gray-300 mb-4" />
+      <hr className="border-t-4 border-gray-600 mb-4" />
 
       <h1 className="text-2xl font-bold mb-4">Welcome, {user.firstName}!</h1>
       <p>Your current points: {points}</p>
@@ -99,16 +99,17 @@ export default function Home() {
         <img
           src="/images/background.png"
           alt="Click me"
-          className="cursor-pointer mx-auto w-32 h-32"
+          className="cursor-pointer mx-auto w-32 h-32 rounded-lg border-4 border-gray-700 shadow-lg"
           onClick={handleImageClick}
         />
       </div>
 
       {/* خط سفلي */}
-      <hr className="border-t-4 border-gray-300 mt-4" />
+      <hr className="border-t-4 border-gray-600 mt-4" />
 
       {/* إضافة الشريط السفلي */}
       <BottomNavigation />
     </div>
   );
 }
+
