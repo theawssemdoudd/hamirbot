@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import BottomNavigation from '@/components/BottomNavigation';
-import tasks from '@app/new_task';
+import tasks from '@/data/tasks';
 interface Task {
   id: number;
   title: string;
