@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import BottomNavigation from '@/components/BottomNavigation'; // استيراد الشريط السفلي
+import { useEffect, useState } from 'react'
 
 declare global {
   interface Window {
@@ -78,7 +77,6 @@ export default function AdminDashboard() {
       </div>
 
       {/* شريط سفلي */}
-      <BottomNavigation />
     </div>
   );
 }
