@@ -61,8 +61,8 @@ export default function Home() {
 
   if (isLoading) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center">
-        <div className="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded">
+      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-gray-800 to-gray-900">
+        <div className="bg-gray-700 text-white font-bold py-2 px-4 rounded shadow-lg animate-pulse">
           Loading...
         </div>
       </main>
@@ -70,14 +70,18 @@ export default function Home() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center">
-      <h1 className="text-4xl font-bold mb-8">TON Connect Demo</h1>
+    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-gray-800 to-gray-900 text-white">
+      <h1 className="text-4xl font-bold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+       connect your ton wallet
+      </h1>
       {tonWalletAddress ? (
         <div className="flex flex-col items-center">
-          <p className="mb-4">Connected: {formatAddress(tonWalletAddress)}</p>
+          <p className="mb-4 text-lg bg-gray-700 py-2 px-4 rounded-lg shadow-md">
+            Connected: <span className="font-mono">{formatAddress(tonWalletAddress)}</span>
+          </p>
           <button
             onClick={handleWalletAction}
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
           >
             Disconnect Wallet
           </button>
@@ -85,12 +89,13 @@ export default function Home() {
       ) : (
         <button
           onClick={handleWalletAction}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
         >
           Connect TON Wallet
         </button>
       )}
-     <BottomNavigation />
+      <BottomNavigation />
     </main>
   );
 }
+
