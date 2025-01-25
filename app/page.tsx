@@ -92,7 +92,7 @@ export default function Home() {
         {/* عنوان مرحب */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-extrabold text-blue-500">Welcome, {user.firstName}!</h1>
-          <p className="text-lg text-gray-300 mt-2">Your current points: <span className="text-green-400 font-bold">{points}</span></p>
+          <p className="text-lg text-gray-300 mt-2"><span className="text-green-400 font-bold">{points}</span>$MY</p>
         </div>
 
         {/* بطاقة النقاط */}
