@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import BottomNavigation from '@/components/BottomNavigation';
-
+import tasks from '@app/new_task';
 interface Task {
   id: number;
   title: string;
@@ -31,10 +31,7 @@ export default function TasksPage() {
       if (savedTasks) {
         setTasks(JSON.parse(savedTasks));
       } else {
-        setTasks([
-          { id: 1, title: 'Visit Example Site', url: 'https://example.com', points: 10, completed: false },
-          { id: 2, title: 'Check Blog Post', url: 'https://example.com/blog', points: 15, completed: false },
-        ]);
+        setTasks(tasks);
       }
     }
   }, [user]);
@@ -161,4 +158,3 @@ export default function TasksPage() {
     </main>
   );
 }
-
