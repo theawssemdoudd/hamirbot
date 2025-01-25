@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@prisma/client": "^5.19.1",
+    "@telegram-apps/sdk": "^2.11.3",
     "@ton/core": "^0.59.1",
     "@tonconnect/ui-react": "^2.0.11",
     "@twa-dev/types": "^7.10.0",
