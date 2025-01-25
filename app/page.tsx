@@ -56,7 +56,6 @@ export default function Home() {
     const newPoints = points + 1;
     setPoints(newPoints);
 
-    // إرسال النقاط و telegramId إلى المسار الصحيح
     fetch('/api/increase-points', {
       method: 'POST',
       headers: {
@@ -87,24 +86,28 @@ export default function Home() {
   if (!user) return <div className="container mx-auto p-4">Loading...</div>;
 
   return (
-    <div className="flex flex-col min-h-screen justify-between bg-gradient-to-b from-gray-900 to-black text-white">
+    <div className="flex flex-col min-h-screen justify-between bg-gradient-to-b from-gray-900 via-black to-gray-800 text-white">
       {/* محتوى الصفحة */}
-      <div className="p-4">
-        <h1 className="text-2xl font-bold mb-4">Welcome, {user.firstName}!</h1>
-        <p>Your current points: {points}</p>
+      <div className="p-6">
+        {/* عنوان مرحب */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-extrabold text-blue-500">Welcome, {user.firstName}!</h1>
+          <p className="text-lg text-gray-300 mt-2">Your current points: <span className="text-green-400 font-bold">{points}</span></p>
+        </div>
 
-        {/* صورة قابلة للنقر */}
-        <div className="my-4 text-center">
+        {/* بطاقة النقاط */}
+        <div className="bg-gray-800 rounded-xl p-6 shadow-lg text-center border border-gray-700">
+          <p className="text-xl font-medium text-gray-300 mb-4">Click the image below to earn points!</p>
           <img
             src="/images/background.png"
-            alt="Click me"
-            className="cursor-pointer mx-auto w-32 h-32 rounded-lg border-4 border-gray-700 shadow-lg"
+            alt="Click to earn points"
+            className="cursor-pointer mx-auto w-40 h-40 rounded-xl border-4 border-blue-500 shadow-md transition-transform duration-300 hover:scale-105"
             onClick={handleImageClick}
           />
         </div>
       </div>
 
-      {/* إضافة الشريط السفلي */}
+      {/* شريط سفلي */}
       <BottomNavigation />
     </div>
   );
